@@ -1,0 +1,39 @@
+name: Monthly Branch and PR Creation
+
+on:
+  push:
+  # schedule:
+    # - cron: '0 0 1 * *'  # 毎月1日の0時0分実行
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create_branch_and_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Create new branch
+        id: create-branch
+        run: |
+          BRANCH_NAME=$(date +'%Y%m%d')_main
+          echo "::set-output name=branch_name::$BRANCH_NAME"
+          git fetch origin --prune
+          git checkout main && git pull origin main
+          git checkout -b $BRANCH_NAME
+          git push origin $BRANCH_NAME
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: develop
+          branch: ${{ steps.create-branch.outputs.BRANCH_NAME }}
+          title: ${{ steps.create-branch.outputs.BRANCH_NAME }} to develop
+          body: 'Automated PR from ${{ steps.create-branch.outputs.BRANCH_NAME }} to develop'
