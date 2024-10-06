@@ -52,7 +52,7 @@ export ASDF_GOLANG_MOD_VERSION_ENABLED=true
 
 コーディング中に出力されたメッセージは以下
 
-```
+```plaintext
 gopls was not able to find modules in your workspace.
 When outside of GOPATH, gopls needs to know which modules you are working on.
 You can fix this by opening your workspace to a folder inside a Go module, or
